@@ -16,7 +16,10 @@ IMAGE_NGINX=wp-stateless-nginx
 
 cd base
 
-docker build -t $IMAGE_BASE:$VERSION .
+docker build -t $IMAGE_BASE:$VERSION \
+    --build-arg WORDPRESS_VERSION=$1 \
+    --build-arg WORDPRESS_SHA1=$2 \
+    .
 
 cd ../cli
 sed "s/$IMAGE_BASE:.*/$IMAGE_BASE:$VERSION/" -i Dockerfile

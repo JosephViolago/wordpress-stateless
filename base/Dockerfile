@@ -1,9 +1,25 @@
 FROM php:7.1-fpm
 
 # install the PHP extensions we need
-RUN apt-get update && apt-get install -y sudo wget unzip vim mysql-client libpng12-dev libjpeg-dev && rm -rf /var/lib/apt/lists/* \
+RUN apt-get update \
+	&& apt-get install -y \
+		sudo \
+		wget \
+		unzip \
+		vim \
+		mysql-client \
+		libpng12-dev \
+		libjpeg-dev \
+		libmagickwand-dev \
+	&& rm -rf /var/lib/apt/lists/* \
+	&& export CFLAGS="$PHP_CFLAGS" CPPFLAGS="$PHP_CPPFLAGS" LDFLAGS="$PHP_LDFLAGS" \
 	&& docker-php-ext-configure gd --with-png-dir=/usr --with-jpeg-dir=/usr \
-	&& docker-php-ext-install gd mysqli opcache
+	&& docker-php-ext-install \
+		gd \
+		mysqli \
+		opcache \
+	&& pecl install imagick-3.4.3 \
+	&& docker-php-ext-enable imagick
 
 
 # set recommended PHP.ini settings
@@ -17,9 +33,13 @@ RUN { \
 		echo 'opcache.enable_cli=1'; \
 	} > /usr/local/etc/php/conf.d/opcache-recommended.ini
 
+RUN { \
+		echo 'extension=imagick.so'; \
+	} > /usr/local/etc/php/conf.d/imagick.ini
+
 # wordpress version from : https://github.com/docker-library/wordpress/blob/master/php7.0/fpm/Dockerfile
-ENV WORDPRESS_VERSION 4.8.2
-ENV WORDPRESS_SHA1 a99115b3b6d6d7a1eb6c5617d4e8e704ed50f450
+ARG WORDPRESS_VERSION
+ARG WORDPRESS_SHA1
 
 # upstream tarballs include ./wordpress/ so this gives us /usr/src/wordpress
 RUN curl -o wordpress.tar.gz -SL https://wordpress.org/wordpress-${WORDPRESS_VERSION}.tar.gz \
