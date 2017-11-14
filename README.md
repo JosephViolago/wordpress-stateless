@@ -37,10 +37,38 @@ docker-compose exec --user root wordpress bash -c "wp core install \
     --admin_email=admin@example.com \
 && wp plugin install wp-file-search \
 && wp plugin activate wp-file-search \
-&& wp plugin install pdf-thumbnails \
-&& wp plugin activate pdf-thumbnails \
+&& wp plugin install pdf-image-generator \
+&& wp plugin activate pdf-image-generator \
 && wp plugin update akismet"
 ```
+
+### Upload PDFs with working thumbnails
+- Upload PDFs
+- In each PDF, set "Featured Image" to the corresponding thumbnail.
+- go to `/wp-admin/options-general.php?page=pdf-image-generator%2Fpdf-image-generator.php`
+- Hit "Regenerate and replace images of all PDFs"
+- Verify: Media Library should now display thumbs next to file
+
+### Get display thumbnails in search results
+- go to `/wp-admin/theme-editor.php?file=search.php&theme=twentyseventeen`
+- apply the following patch:
+
+```diff
+--- search.php
++++ search.php
+@@ -30,6 +30,7 @@
+             /* Start the Loop */
+             while ( have_posts() ) : the_post();
+
++                echo get_the_post_thumbnail( $post_id, 'thumbnail', array( 'class' => 'alignleft' ) );
+                 /**
+                  * Run the loop for the search to output the results.
+                  * If you want to overload this in a child theme then include a file
+
+```
+
+- Save by hitting "Update File"
+- Verify: go to `/?s=fig`; you should see a thumbnail next to the correct search result
 
 ## Shutdown
 - **$** `docker-compose down -v`

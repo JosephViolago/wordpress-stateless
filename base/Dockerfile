@@ -11,6 +11,7 @@ RUN apt-get update \
 		libpng12-dev \
 		libjpeg-dev \
 		libmagickwand-dev \
+		graphicsmagick-imagemagick-compat \
 	&& rm -rf /var/lib/apt/lists/* \
 	&& export CFLAGS="$PHP_CFLAGS" CPPFLAGS="$PHP_CPPFLAGS" LDFLAGS="$PHP_LDFLAGS" \
 	&& docker-php-ext-configure gd --with-png-dir=/usr --with-jpeg-dir=/usr \
@@ -32,10 +33,6 @@ RUN { \
 		echo 'opcache.fast_shutdown=1'; \
 		echo 'opcache.enable_cli=1'; \
 	} > /usr/local/etc/php/conf.d/opcache-recommended.ini
-
-RUN { \
-		echo 'extension=imagick.so'; \
-	} > /usr/local/etc/php/conf.d/imagick.ini
 
 # wordpress version from : https://github.com/docker-library/wordpress/blob/master/php7.0/fpm/Dockerfile
 ARG WORDPRESS_VERSION

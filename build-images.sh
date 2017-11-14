@@ -22,11 +22,11 @@ docker build -t $IMAGE_BASE:$VERSION \
     .
 
 cd ../cli
-sed "s/$IMAGE_BASE:.*/$IMAGE_BASE:$VERSION/" -i Dockerfile
+sed -i '' -E "s/$IMAGE_BASE:.*/$IMAGE_BASE:$VERSION/" Dockerfile Dockerfile && rm -f Dockerfile.backup
 docker build -t $IMAGE_CLI:$VERSION .
 
 cd ../nginx
-sed "s/$IMAGE_CLI:.*/$IMAGE_CLI:$VERSION/" -i Dockerfile
+sed -i '' -E "s/$IMAGE_CLI:.*/$IMAGE_CLI:$VERSION/" Dockerfile Dockerfile && rm -f Dockerfile.backup
 docker build -t $IMAGE_NGINX:$VERSION .
 
 echo "Done"
